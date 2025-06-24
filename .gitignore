@@ -6,7 +6,7 @@ venv/
 
 # Streamlit
 .streamlit/
-
+models/best_model.pth
 # Logs
 *.log
 
