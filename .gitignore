@@ -13,3 +13,4 @@ models/best_model.pth
 # System
 .DS_Store
 *.zip
+models/best_model.pth
