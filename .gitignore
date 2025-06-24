@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+*.env
+
+# Streamlit
+.streamlit/
+
+# Logs
+*.log
+
+# System
+.DS_Store
+*.zip
