@@ -2,8 +2,6 @@ services:
   - type: web
     name: elephant-id-app
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "streamlit run app.py"
-    envVars:
-      - key: PYTHONUNBUFFERED
-        value: "1"
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port=$PORT --server.enableCORS=false
+    plan: free
