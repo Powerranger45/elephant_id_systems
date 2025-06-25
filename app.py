@@ -155,7 +155,7 @@ def create_grouping_summary(output_dir, grouped):
         f.write("- Original folder names are preserved in filenames\n")
         f.write("- Similarity threshold: 85%\n")
 
-def process_zip_batch_improved(zip_file, model, transform, ear_detector, device):
+def process_zip_batch_improved(zip_file, model, transform, ear_detector, device, similarity_threshold):
     """
     Improved version: Process a batch of elephant images from a ZIP file and group by similarity.
     Works with ANY folder structure - single folder, nested folders, mixed depths, etc.
@@ -212,7 +212,7 @@ def process_zip_batch_improved(zip_file, model, transform, ear_detector, device)
 
         # Step 3: Group by similarity using improved clustering
         st.info("🔄 Grouping similar elephants...")
-        similarity_threshold = 0.85
+        # similarity_threshold = 0.85  # ❌ REMOVED - now using the parameter
         grouped = []
         used = set()
         embeddings_array = np.array(embeddings)
@@ -460,7 +460,7 @@ def main():
             if st.button("🚀 Process ZIP File", type="primary"):
                 with st.spinner("🔄 Processing images and grouping elephants..."):
                     zip_result, error = process_zip_batch_improved(
-                        zip_file, model, transform, ear_detector, device
+                        zip_file, model, transform, ear_detector, device, similarity_threshold
                     )
 
                     if error:
