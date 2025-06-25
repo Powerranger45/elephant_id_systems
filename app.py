@@ -11,12 +11,22 @@ import tempfile
 from pathlib import Path
 import shutil
 from sklearn.metrics.pairwise import cosine_similarity
-
+import requests
 
 from models.few_shot_model import SiameseEarNetwork, ElephantIdentifier
 from models.ear_detector import SimpleEarDetector
 from utils.data_loader import get_transforms
 
+
+model_path = 'models/best_model.pth'
+if not os.path.exists(model_path):
+    os.makedirs('models', exist_ok=True)
+    url = 'https://github.com/Powerranger45/elephant_id_systems/releases/download/v1.0/best_model.pth'
+    print("🔄 Downloading model from GitHub release...")
+    response = requests.get(url)
+    with open(model_path, 'wb') as f:
+        f.write(response.content)
+    print("✅ Model downloaded.")
 # Page config
 st.set_page_config(
     page_title="Elephant ID System",
