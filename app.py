@@ -19,9 +19,15 @@ from utils.data_loader import get_transforms
 
 model_path = 'models/best_model.pth'
 if not os.path.exists(model_path):
-    url = 'https://drive.google.com/uc?id=1ljOG8mPgQ7fQuq66Dh_oeuUwjjGMGD2W'
-    os.makedirs('models', exist_ok=True)
-    gdown.download(url, model_path, quiet=False)
+    try:
+        st.info("Downloading model...")
+        url = 'https://drive.google.com/uc?id=1ljOG8mPgQ7fQuq66Dh_oeuUwjjGMGD2W'
+        os.makedirs('models', exist_ok=True)
+        gdown.download(url, model_path, quiet=False)
+        st.success("Model downloaded successfully.")
+    except Exception as e:
+        st.error(f"❌ Failed to download model: {e}")
+        st.stop()
 # Page config
 st.set_page_config(
     page_title="Elephant ID System",
