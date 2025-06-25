@@ -16,3 +16,4 @@ data/
 .DS_Store
 *.zip
 
+models/best_model.pth
