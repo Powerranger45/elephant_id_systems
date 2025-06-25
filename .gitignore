@@ -6,7 +6,7 @@ venv/
 
 # Streamlit
 .streamlit/
-models/best_model.pth
+
 
 data/
 # Logs
@@ -15,4 +15,4 @@ data/
 # System
 .DS_Store
 *.zip
-models/best_model.pth
+
