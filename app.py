@@ -11,11 +11,17 @@ import tempfile
 from pathlib import Path
 import shutil
 from sklearn.metrics.pairwise import cosine_similarity
+import gdown
 
 from models.few_shot_model import SiameseEarNetwork, ElephantIdentifier
 from models.ear_detector import SimpleEarDetector
 from utils.data_loader import get_transforms
 
+model_path = 'models/best_model.pth'
+if not os.path.exists(model_path):
+    url = 'https://drive.google.com/uc?id=1ljOG8mPgQ7fQuq66Dh_oeuUwjjGMGD2W'
+    os.makedirs('models', exist_ok=True)
+    gdown.download(url, model_path, quiet=False)
 # Page config
 st.set_page_config(
     page_title="Elephant ID System",
