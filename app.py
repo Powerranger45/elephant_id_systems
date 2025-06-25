@@ -307,7 +307,7 @@ def main():
         st.error("❌ Model not found! Please train the model first using `python train.py`")
         st.stop()
 
-    st.success(f"✅ Model loaded successfully! Trained on {len(class_names)} elephants")
+    st.success(f"✅ Model loaded successfully!")
 
     # Initialize ear detector and transforms
     ear_detector = SimpleEarDetector()
