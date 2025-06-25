@@ -124,10 +124,13 @@ def extract_and_collect_images(uploaded_zip_file):
     image_paths = []
 
     for root, dirs, files in os.walk(temp_dir):
-        for file in files:
-            if file.lower().endswith(valid_exts):
-                image_paths.append(os.path.join(root, file))
-
+         for file in files:
+             if (
+            file.lower().endswith(valid_exts)
+            and not file.startswith("._")  # skip AppleDouble files
+            and "__MACOSX" not in root     # skip macOS metadata folders
+        ):
+              image_paths.append(os.path.join(root, file))
     return image_paths, temp_dir
 
 def create_grouping_summary(output_dir, grouped):
