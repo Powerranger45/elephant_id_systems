@@ -5,7 +5,7 @@ venv/
 *.env
 
 # Streamlit
-.streamlit/
+!/.streamlit/config.toml
 
 
 data/
