@@ -11,4 +11,11 @@ streamlit>=1.0.0
 tqdm>=4.62.0
 ultralytics>=8.0.0
 requests>=2.0.0
-
+flask
+pathlib
+pandas
+scipy
+zipfile36
+imgaug
+flask-cors
+torchaudio

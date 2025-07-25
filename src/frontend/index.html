@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐘 Elephant ID System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 0 0 15px 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+            color: #667eea;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .result-card h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .image-preview {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .confidence-bar {
+            background: #e9ecef;
+            border-radius: 20px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .confidence-high { background: #28a745; }
+        .confidence-medium { background: #ffc107; }
+        .confidence-low { background: #dc3545; }
+
+        .match-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .match-rank {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .match-info {
+            flex: 1;
+        }
+
+        .match-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .match-confidence {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+
+        .status-error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .status-info {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .setting-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .setting-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .setting-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .setting-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .comparison-details {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .feature-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .feature-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .feature-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .batch-info {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .batch-info h4 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+
+        .batch-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .batch-info li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .batch-info li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐘 Asian Elephant Individual Identification System</h1>
+            <p>Advanced AI-powered elephant identification using ear pattern recognition</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('single')">
+                <i class="fas fa-search"></i>
+                Image Identification & Comparison
+            </button>
+            <button class="tab" onclick="switchTab('batch')">
+                <i class="fas fa-folder"></i>
+                Batch Processing
+            </button>
+        </div>
+
+        <div class="tab-content">
+            <!-- Single Image Tab (now includes comparison) -->
+            <div id="single-tab" class="tab-panel active">
+                <div class="upload-area" onclick="document.getElementById('single-file').click()" ondrop="handleDrop(event, 'single')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <i class="fas fa-search upload-icon"></i>
+                    <div class="upload-text">Upload elephant image for identification</div>
+                    <div class="upload-subtext">Get detailed comparison with existing dataset</div>
+                    <input type="file" id="single-file" class="file-input" accept="image/*" onchange="handleSingleImage(this)">
+                </div>
+
+                <div id="single-results" class="results-grid" style="display: none;">
+                    <div class="result-card">
+                        <h3><i class="fas fa-image"></i> Processed Image</h3>
+                        <img id="original-image" class="image-preview" alt="Original">
+                        <img id="ear-region" class="image-preview" alt="Ear Region" style="display: none;">
+                    </div>
+                    <div class="result-card">
+                        <h3><i class="fas fa-chart-bar"></i> Top Dataset Matches</h3>
+                        <div id="identification-results"></div>
+                    </div>
+                </div>
+
+                <div id="detailed-comparison" class="comparison-details" style="display: none;">
+                    <h3><i class="fas fa-microscope"></i> Detailed Analysis</h3>
+                    <div id="feature-analysis" class="feature-comparison"></div>
+                    <div id="explanation-text" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;"></div>
+                </div>
+            </div>
+
+            <!-- Batch Processing Tab -->
+            <div id="batch-tab" class="tab-panel">
+                <div class="batch-info">
+                    <h4><i class="fas fa-info-circle"></i> Batch Processing Features</h4>
+                    <ul>
+                        <li>Process up to 200GB of elephant images</li>
+                        <li>Automatic grouping by similarity</li>
+                        <li>Works with any folder structure</li>
+                        <li>Generates detailed summary reports</li>
+                        <li>Preserves original file organization</li>
+                    </ul>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <div class="setting-label">Similarity Threshold</div>
+                        <input type="range" id="similarity-threshold" class="setting-input" min="0.5" max="0.95" step="0.05" value="0.85" oninput="updateThresholdDisplay(this.value)">
+                        <div style="text-align: center; margin-top: 10px;">
+                            <span id="threshold-display">85%</span>
+                            <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                                Higher = stricter grouping
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upload-area" onclick="selectFolder()" ondrop="handleFolderDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <i class="fas fa-folder-open upload-icon"></i>
+                    <div class="upload-text">Select folder with elephant images</div>
+                    <div class="upload-subtext">Click to browse or drag & drop a folder</div>
+                </div>
+
+                <div id="selected-folder" style="display: none; margin: 20px 0; padding: 15px; background: #e7f3ff; border-radius: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-folder" style="color: #0056b3;"></i>
+                        <div>
+                            <div style="font-weight: 600; color: #0056b3;">Selected Folder:</div>
+                            <div id="folder-path" style="font-size: 0.9rem; color: #666; word-break: break-all;"></div>
+                            <div id="folder-info" style="font-size: 0.8rem; color: #666; margin-top: 5px;"></div>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="processBatchFolder()" style="margin-top: 15px;">
+                        <i class="fas fa-play"></i>
+                        Start Processing
+                    </button>
+                </div>
+
+                <div id="batch-progress" class="progress-container" style="display: none;">
+                    <div class="progress-text" id="batch-status">Processing...</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="batch-progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div id="batch-details" style="margin-top: 15px; font-size: 0.9rem; color: #666;"></div>
+                </div>
+
+                <div id="batch-results" style="display: none;">
+                    <div class="status-message status-success">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Batch processing completed!</strong>
+                            <div id="batch-summary"></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" id="download-results" onclick="downloadBatchResults()">
+                        <i class="fas fa-download"></i>
+                        Download Grouped Results
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dataset Comparison Tab - REMOVED, now integrated into single tab -->
+        </div>
+    </div>
+
+    <script>
+        let currentBatchResult = null;
+        let selectedFolderPath = null;
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Remove active class from all tabs and panels
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+            // Add active class to selected tab and panel
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Folder selection for batch processing
+        async function selectFolder() {
+            try {
+                const result = await window.electronAPI.selectFolder();
+                if (!result.canceled && result.filePaths.length > 0) {
+                    selectedFolderPath = result.filePaths[0];
+                    displaySelectedFolder(selectedFolderPath);
+                }
+            } catch (error) {
+                console.error('Error selecting folder:', error);
+                showStatus('Error selecting folder: ' + error.message, 'error');
+            }
+        }
+
+        function displaySelectedFolder(folderPath) {
+            document.getElementById('selected-folder').style.display = 'block';
+            document.getElementById('folder-path').textContent = folderPath;
+
+            // Get folder info (you could add more details here)
+            const folderName = folderPath.split('/').pop() || folderPath.split('\\').pop();
+            document.getElementById('folder-info').textContent = `Folder: ${folderName}`;
+        }
+
+        // Handle folder drop
+        function handleFolderDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+
+            // Handle dropped folders/files
+            const items = event.dataTransfer.items;
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.kind === 'file') {
+                    const entry = item.webkitGetAsEntry();
+                    if (entry && entry.isDirectory) {
+                        // For security reasons, we can't directly access dropped folders in Electron
+                        // Show message to use the folder selection dialog instead
+                        showStatus('Please use the "Select Folder" button to choose a folder', 'info');
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Remove active class from all tabs and panels
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+            // Add active class to selected tab and panel
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Drag and drop handlers
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(event, type) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const fileInput = document.getElementById(type + '-file');
+                fileInput.files = files;
+
+                if (type === 'single') {
+                    handleSingleImage(fileInput);
+                } else if (type === 'batch') {
+                    handleBatchUpload(fileInput);
+                } else if (type === 'compare') {
+                    handleCompareImage(fileInput);
+                }
+            }
+        }
+
+        // Single image processing (now uses comparison API)
+        async function handleSingleImage(input) {
+            if (!input.files || !input.files[0]) return;
+
+            const file = input.files[0];
+            showStatus('Processing image and comparing with dataset...', 'info');
+
+            try {
+                // Show original image
+                const originalImg = document.getElementById('original-image');
+                originalImg.src = URL.createObjectURL(file);
+                document.getElementById('single-results').style.display = 'grid';
+
+                // Process with backend using comparison API
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const response = await fetch('/api/compare-dataset', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                displayComparisonResults(result);
+                showStatus('Image processed and compared successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error processing single image:', error);
+                showStatus('Error processing image: ' + error.message, 'error');
+            }
+        }
+
+        function displaySingleResults(result) {
+            // This function is now replaced by displayComparisonResults
+            displayComparisonResults(result);
+        }
+
+        // Batch processing with folder
+        async function processBatchFolder() {
+            if (!selectedFolderPath) {
+                showStatus('Please select a folder first', 'error');
+                return;
+            }
+
+            const threshold = document.getElementById('similarity-threshold').value;
+
+            showBatchProgress(true);
+            updateBatchProgress(0, 'Starting batch processing...');
+
+            try {
+                const response = await fetch('/api/process-batch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        folder_path: selectedFolderPath,
+                        similarity_threshold: threshold
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                currentBatchResult = result;
+                showBatchResults(result);
+
+            } catch (error) {
+                console.error('Error processing batch:', error);
+                showStatus('Error processing batch: ' + error.message, 'error');
+                showBatchProgress(false);
+            }
+        }
+
+        function showBatchProgress(show) {
+            document.getElementById('batch-progress').style.display = show ? 'block' : 'none';
+            document.getElementById('batch-results').style.display = 'none';
+        }
+
+        function updateBatchProgress(percent, status, details = '') {
+            document.getElementById('batch-progress-fill').style.width = percent + '%';
+            document.getElementById('batch-status').textContent = status;
+            document.getElementById('batch-details').textContent = details;
+        }
+
+        function showBatchResults(result) {
+            showBatchProgress(false);
+
+            const summaryDiv = document.getElementById('batch-summary');
+            if (summaryDiv) {
+                summaryDiv.innerHTML = `
+                    Found ${result.groups_count} unique elephant groups from ${result.total_images} images
+                `;
+            } else {
+                console.error('batch-summary element not found!');
+            }
+
+            document.getElementById('batch-results').style.display = 'block';
+        }
+
+        function downloadBatchResults() {
+            if (currentBatchResult && currentBatchResult.download_path) {
+                const filename = currentBatchResult.download_path.split('/').pop() || currentBatchResult.download_path.split('\\').pop();
+                const link = document.createElement('a');
+                link.href = `/api/download/${filename}`;
+                link.download = 'grouped_elephants.zip';
+                link.click();
+            }
+        }
+
+        function updateThresholdDisplay(value) {
+            document.getElementById('threshold-display').textContent = Math.round(value * 100) + '%';
+        }
+
+        function displayComparisonResults(result) {
+            if (result.error) {
+                document.getElementById('identification-results').innerHTML =
+                    `<div class="status-message status-error">${result.error}</div>`;
+                return;
+            }
+
+            // Show ear region
+            if (result.ear_region_base64) {
+                const earImg = document.getElementById('ear-region');
+                earImg.src = 'data:image/png;base64,' + result.ear_region_base64;
+                earImg.style.display = 'block';
+            }
+
+            // Display matches
+            const matchesDiv = document.getElementById('identification-results');
+            let html = '';
+
+            if (result.matches && result.matches.length > 0) {
+                result.matches.forEach((match, index) => {
+                    const confidence = Math.round(match.confidence * 100);
+                    const confidenceClass = confidence > 70 ? 'confidence-high' :
+                                          confidence > 50 ? 'confidence-medium' : 'confidence-low';
+
+                    html += `
+                        <div class="match-item" onclick="showDetailedComparison('${match.elephant_id}', ${index})">
+                            <div class="match-rank">${index + 1}</div>
+                            <div class="match-info">
+                                <div class="match-name">${match.elephant_id}</div>
+                                <div class="match-confidence">Similarity: ${confidence}%</div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill ${confidenceClass}" style="width: ${confidence}%;"></div>
+                                </div>
+                                ${match.explanation ? `<div style="font-size: 0.8rem; color: #666; margin-top: 5px;">${match.explanation}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = '<div class="status-message status-info">No similar elephants found in dataset.</div>';
+            }
+
+            matchesDiv.innerHTML = html;
+
+            // Show detailed analysis if available
+            if (result.feature_analysis) {
+                displayFeatureAnalysis(result.feature_analysis);
+            }
+        }
+
+        function displayFeatureAnalysis(analysis) {
+            const analysisDiv = document.getElementById('feature-analysis');
+            let html = '';
+
+            // Display feature scores
+            Object.entries(analysis.scores || {}).forEach(([feature, score]) => {
+                const percentage = Math.round(score * 100);
+                html += `
+                    <div class="feature-item">
+                        <div class="feature-score">${percentage}%</div>
+                        <div class="feature-label">${feature}</div>
+                    </div>
+                `;
+            });
+
+            analysisDiv.innerHTML = html;
+
+            // Show explanation
+            if (analysis.explanation) {
+                document.getElementById('explanation-text').innerHTML =
+                    `<strong>Analysis:</strong> ${analysis.explanation}`;
+            }
+
+            document.getElementById('detailed-comparison').style.display = 'block';
+        }
+
+        function showDetailedComparison(elephantId, index) {
+            // This would show more detailed comparison for the selected match
+            console.log('Show detailed comparison for:', elephantId);
+        }
+
+        // Utility functions
+        function showStatus(message, type) {
+            // Remove existing status messages
+            document.querySelectorAll('.status-message').forEach(el => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            });
+
+            // Create new status message
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+
+            // Insert at the top of the active tab
+            const activeTab = document.querySelector('.tab-panel.active');
+            if (activeTab) {
+                activeTab.insertBefore(statusDiv, activeTab.firstChild);
+
+                // Auto-remove after 5 seconds for success/info messages
+                if (type !== 'error') {
+                    setTimeout(() => {
+                        if (statusDiv.parentNode) {
+                            statusDiv.parentNode.removeChild(statusDiv);
+                        }
+                    }, 5000);
+                }
+            }
+        }
+
+        // Initialize app
+        async function initializeApp() {
+            // Setup Electron API bridge
+            if (typeof require !== 'undefined') {
+                const { ipcRenderer } = require('electron');
+                window.electronAPI = {
+                    selectFolder: () => ipcRenderer.invoke('select-folder'),
+                    showItemInFolder: (path) => ipcRenderer.invoke('show-item-in-folder', path),
+                    getAppPath: (name) => ipcRenderer.invoke('get-app-path', name)
+                };
+            }
+
+            try {
+                const response = await fetch('/api/model-info');
+                const modelInfo = await response.json();
+
+                if (modelInfo.error) {
+                    showStatus('Model loading error: ' + modelInfo.error, 'error');
+                } else {
+                    showStatus(`Model loaded successfully! ${modelInfo.elephants_count} elephants in database.`, 'success');
+                }
+            } catch (error) {
+                showStatus('Failed to connect to backend: ' + error.message, 'error');
+            }
+        }
+
+        // Start the app
+        window.addEventListener('load', initializeApp);
+    </script>
+</body>
+</html>
