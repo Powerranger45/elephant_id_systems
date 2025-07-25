@@ -1,21 +1,29 @@
 {
   "name": "elephant-id-desktop",
   "version": "1.0.0",
-  "description": "Asian Elephant Individual Identification System - Desktop App",
+  "description": "Airavat - Desktop App",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
     "build": "electron-builder",
+    "publish": "electron-builder --publish always",
     "build-win": "electron-builder --win",
     "build-mac": "electron-builder --mac",
     "build-linux": "electron-builder --linux",
     "pack": "electron-builder --dir",
     "dist": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Powerranger45/elephant_id_systems"
+  },
   "build": {
     "appId": "com.elephantid.desktop",
-    "productName": "Elephant ID System",
+    "productName": "Airavat V1",
+    "publish": {
+      "provider": "github"
+    },
     "directories": {
       "output": "dist"
     },
